@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html>
+<!--ng-app tells Angular to treat this html as an Angular doc-->
+<html ng-app="WordcountApp"> 
     <head>
         <title>Wordcount</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,50 +11,51 @@
             }
         </style>
     </head>
-<body>
+<!--adding Angular controller here (so view (run by html) has access to scope?). Both view and controller need access to scope-->
+<body ng-controller="WordcountController">
     <div class="container">
         <div class="row">
             <div class="col-sm-5 col-sm-offset-1">
                 <h1>Wordcount 3000</h1>
                 <br>
-                <form role="form" method='POST' action='/'>
+                <!--ng-submit  here calls getResults() function when the submit button is pressed-->
+                <form role="form" ng-submit="getResults()">
                     <div class="form-group">
-                        <input type="text" name="url" class="form-control" id="url-box" placeholder="Enter URL..." style="max-width: 300px;" autofocus required>
+                        <input type="text" name="url" class="form-control" id="url-box" placeholder="Enter URL..." style="max-width: 300px;" ng-model="url" required>
                     </div>       
                     <button type="submit" class="btn btn-default">Submit</button>
                 </form>
-                <br>      
-                {% for error in errors %}
-                    <h4>{{ error }}</h4>
-                {% endfor %}
-                <br>
             </div>  
             <div class="col-sm-5 col-sm-offset-1">
-                {% if results %}
-                    <h2>Frequencies</h2>
-                    <br>
-                    <div id="results">
-                        <table class="table table-striped" style="max-width: 300px;">
-                            <thead>
-                                <tr>
-                                    <th>Word</th>
-                                    <th>Count</th>
-                                </tr>
-                            </thead>
-                            {% for result in results%}
-                                <tr>
-                                    <td>{{ result[0] }}</td>
-                                    <td>{{result[1]}}</td>
-                                </tr>
-                            {% endfor %}
-                        </table>
-                    </div>
-                   {% endif %}
-                </div>
+                <h2>Frequencies</h2>
+                <br>
+                <!--Since both Jinja2 and Angular template tags use double curly braces, we -->
+                <!--need to escape the Jinja2 tags using  {% raw %} and  {% endraw %}-->
+                <div id="results">
+                    <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Word</th>
+                            <th>Count</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% raw %}
+                        <tr ng-repeat="(key, val) in wordcounts"> 
+                            <td>{{key}}</td>
+                            <td>{{val}}</td>
+                        </tr>
+                    {% endraw %}
+                    </tbody>
+                </table>
+               </div>
             </div>
+        </div>
     </div>
     <br><br>
     <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
     <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.9/angular.min.js"></script>
+    <script src="{{ url_for('static', filename='main.js') }}"></script>
 </body>
 </html>

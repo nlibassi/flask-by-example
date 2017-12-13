@@ -12,6 +12,7 @@ from rq import Queue
 from rq.job import Job
 from worker import conn
 from flask import jsonify
+import json
 
 app = Flask(__name__)
 app.config.from_object(os.environ['APP_SETTINGS']) #uses settings based on environment: staging, config, developement (local)
@@ -75,20 +76,23 @@ def count_and_save_words(url):
 #requests is a library for sending external HTTP GET requests. Will be used to grab the specific user-provided URL
 #request is a flask object used to GET and POST requests within the Flask app
 @app.route('/', methods=['GET', 'POST'])
-def index():
-    results = {}
-    if request.method == 'POST':
-        #get url that the user has entered
-        url = request.form['url']
-        if 'http://' not in url[:7]:
-            url = 'http://' + url
-        job = q.enqueue_call(
-            func=count_and_save_words, args=(url,), result_ttl=5000
-            )
-        print(job.get_id())
-        
-    return render_template('index.html', results=results)
+def index():        
+    return render_template('index.html')
 
+#find out why these functions don't have to be called. automatically called from decorator?
+@app.route('/start', methods=['POST'])
+def get_counts():
+    # get url
+    data = json.loads(request.data.decode())
+    url = data["url"]
+    if 'http://' not in url[:7] and 'https://' not in url[:8]:
+        url = 'http://' + url
+    # start job
+    job = q.enqueue_call(
+        func=count_and_save_words, args=(url,), result_ttl=5000
+        )
+    # return created job id
+    return job.get_id()
 
 @app.route('/results/<job_key>', methods=['GET'])
 def get_results(job_key):
@@ -105,6 +109,8 @@ def get_results(job_key):
         return jsonify(results)
     else:
         return "Nay!", 202
+
+
 """
 @app.route('/<name>')
 def hello_name(name):
