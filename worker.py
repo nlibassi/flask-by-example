@@ -10,7 +10,8 @@ connection to the Redis server on localhost:6379
 
 listen = ['default']
 
-#os.getenv returns env variable of key if it exists or 
+#os.getenv returns env variable of key if it exists
+# (REDISTOGO_URL) or 
 #default if it doesn't exist where os.getenv(key, default=None)
 redis_url = os.getenv('REDISTOGO_URL', 'redis://localhost:6379')
 
