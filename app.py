@@ -24,8 +24,8 @@ db = SQLAlchemy(app) #how is this inheriting from app?
 #on that connection
 q = Queue(connection=conn) 
 
-from models import *
 #why doesn't this work?: from models import Result. maybe bc of Python version?
+from models import *
 
 
 def count_and_save_words(url):
@@ -41,7 +41,7 @@ def count_and_save_words(url):
 
     # text processing
     raw = BeautifulSoup(r.text).get_text()
-    nltk.data.path.append('/home/nlibassi/flask-by-example/nltk_data/') # set the path 
+    nltk.data.path.append('/home/nlibassi/flask-by-example/nltk_data/') # set the path (how is this done on heroku?)
     tokens = nltk.word_tokenize(raw) # returns list, same as split using space?
     text = nltk.Text(tokens)
 
@@ -87,7 +87,8 @@ def get_counts():
     url = data["url"]
     if 'http://' not in url[:7] and 'https://' not in url[:8]:
         url = 'http://' + url
-    # start job
+    # start job, result_ttl parameter is expiration time of the key where
+    #the job result will be stored (units seconds probably, not in docs)
     job = q.enqueue_call(
         func=count_and_save_words, args=(url,), result_ttl=5000
         )
@@ -99,6 +100,7 @@ def get_results(job_key):
 
     job = Job.fetch(job_key, connection=conn)
 
+    # job is no longer finishing even when run locally for some reason
     if job.is_finished:
         result = Result.query.filter_by(id=job.result).first()
         results = sorted(

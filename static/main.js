@@ -45,9 +45,9 @@
                                 $timeout.cancel(timeout);
                                 return false;
                             }
-                            // continue to call the poller() function every 2 seconds
-                            // until the timeout is cancelled
-                            timeout = $timeout(poller, 2000);
+                          // continue to call the poller() function every 2 seconds
+                          // until the timeout is cancelled
+                          timeout = $timeout(poller, 2000);
                     });
             };
             poller();
