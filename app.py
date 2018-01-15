@@ -41,7 +41,8 @@ def count_and_save_words(url):
 
     # text processing
     raw = BeautifulSoup(r.text).get_text()
-    nltk.data.path.append('/home/nlibassi/flask-by-example/nltk_data/tokenizers/') # set the path (how is this done on heroku?)
+    #tried adding 'tokenizers' dir to path below, no dice
+    nltk.data.path.append('/home/nlibassi/flask-by-example/nltk_data/') # set the path (how is this done on heroku?)
     tokens = nltk.word_tokenize(raw) # returns list, same as split using space?
     text = nltk.Text(tokens)
 
