@@ -20,7 +20,7 @@ class ProductionConfig(Config):
 class StagingConfig(Config):
     DEVELOPMENT = True
     DEBUG = True
-    NLTK_DATA = '/home/nlibassi/flask-by-example/nltk_data/'
+    #NLTK_DATA = '/home/nlibassi/flask-by-example/nltk_data/'
 
 class DevelopmentConfig(Config):
     DEVELOPMENT = True
